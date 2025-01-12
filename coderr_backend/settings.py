@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'rest_framework.authtoken',
-    'coderr_app'
+    'coderr_app',
+    'user_auth_app'
 ]
 
 MIDDLEWARE = [
