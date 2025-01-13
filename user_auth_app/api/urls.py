@@ -1,10 +1,12 @@
 from django.urls import path
-from .views import UserProfileList, UserProfileDetail, RegistrationView, CustomLoginView
+from .views import RegistrationView, CustomLoginView
 
 
 urlpatterns = [
-    path('profiles/', UserProfileList.as_view(), name='userprofile-list'),
-    path('profiles/<int:pk>/', UserProfileDetail.as_view(), name='userprofile-detail'),
+    # path('profile/', UserProfileList.as_view(), name='userprofile-list'),     # eine View um alle Profile anzuzeigen?
+    path('profile/<int:pk>/'),
+    path('profiles/business/'),
+    path('profiles/customers/'),
     path('registration/', RegistrationView.as_view(), name='registration'),
     path('login/', CustomLoginView.as_view(), name='login'),
 ]

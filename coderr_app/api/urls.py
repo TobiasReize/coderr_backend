@@ -10,4 +10,8 @@ router.register(r'orders', OrderViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('offerdetails/<int:pk>/'),
+    path('order-count/<int:pk>/'),
+    path('completed-order-count/<int:pk>/'),
+    path('base-info/'),
 ]
