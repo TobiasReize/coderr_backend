@@ -52,13 +52,13 @@ class OfferSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'min_price', 'min_delivery_time']
     
     def validate_details(self, data):
-        print('details data:', data)
+        # print('details data:', data)
 
         if len(data) != 3:
             raise serializers.ValidationError('Need 3 details!')
         
         offer_types = [offer_detail['offer_type'] for offer_detail in data]
-        print('offer_types:', offer_types)
+        # print('offer_types:', offer_types)
         if 'basic' not in offer_types:
             raise serializers.ValidationError('basic is not available!')
         if 'standard' not in offer_types:
