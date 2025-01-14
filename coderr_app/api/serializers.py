@@ -7,6 +7,12 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ['id', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
 
+    def validate_features(self, data):
+        amount = len(data)
+        if amount < 1:
+            raise serializers.ValidationError('At least one feature is required!')
+        return data
+
 
 class OfferDetailUrlSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField(read_only=True)
@@ -44,6 +50,22 @@ class OfferSerializer(serializers.ModelSerializer):
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time']
         read_only_fields = ['user', 'min_price', 'min_delivery_time']
+    
+    def validate_details(self, data):
+        print('details data:', data)
+
+        if len(data) != 3:
+            raise serializers.ValidationError('Need 3 details!')
+        
+        offer_types = [offer_detail['offer_type'] for offer_detail in data]
+        print('offer_types:', offer_types)
+        if 'basic' not in offer_types:
+            raise serializers.ValidationError('basic is not available!')
+        if 'standard' not in offer_types:
+            raise serializers.ValidationError('standard is not available!')
+        if 'premium' not in offer_types:
+            raise serializers.ValidationError('premium is not available!')
+        return data
 
     def create(self, validated_data):
         print('validated_data:', validated_data)
