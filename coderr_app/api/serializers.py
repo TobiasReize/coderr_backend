@@ -7,22 +7,26 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ['id', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
 
-    # def to_representation(self, instance):        # Möglichkeit 2
-    #     return f"/offerdetails/{instance.id}/"
+
+class OfferDetailUrlSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = OfferDetail
+        fields = ['id', 'url']
+
+    def get_url(self, obj):
+        return f"/offerdetails/{obj.id}/"
 
 
-class OfferSerializer(serializers.ModelSerializer):
-    # details = serializers.StringRelatedField(many=True)     # nutzt die __str__ Methode des OfferDetail model
-    details = OfferDetailSerializer(many=True)    # Möglichkeit 2
+class OfferListSerializer(serializers.ModelSerializer):
+    details = OfferDetailUrlSerializer(many=True)
     user_details = serializers.SerializerMethodField(read_only=True)
-    min_price = serializers.SerializerMethodField()
-    min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
-        read_only_fields = ['user']
-
+        read_only_fields = ['user', 'min_price', 'min_delivery_time']
 
     def get_user_details(self, obj):
         user = obj.user
@@ -33,21 +37,13 @@ class OfferSerializer(serializers.ModelSerializer):
         }
 
 
-    def get_min_price(self, obj):
-        print('min_price:', obj)
-        details = obj.details.all()
-        print('min_price_all:', details)
-        if not details.exists():
-            return None
-        return min(detail.price for detail in details)
+class OfferSerializer(serializers.ModelSerializer):
+    details = OfferDetailSerializer(many=True)
 
-
-    def get_min_delivery_time(self, obj):
-        details = obj.details.all()
-        if not details.exists():
-            return None
-        return min(detail.delivery_time_in_days for detail in details)
-
+    class Meta:
+        model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time']
+        read_only_fields = ['user', 'min_price', 'min_delivery_time']
 
     def create(self, validated_data):
         print('validated_data:', validated_data)

@@ -33,5 +33,4 @@ class OfferDetail(models.Model):
     features = models.JSONField()
 
     def __str__(self):
-        return f"/offerdetails/{id}/"
-        # return f"{self.title} ({self.offer_type})"
+        return f"{self.title} ({self.offer_type})"
