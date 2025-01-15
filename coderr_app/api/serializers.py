@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Min
 from coderr_app.models import Offer, OfferDetail
 
 
@@ -28,11 +29,13 @@ class OfferDetailUrlSerializer(serializers.ModelSerializer):
 class OfferListSerializer(serializers.ModelSerializer):
     details = OfferDetailUrlSerializer(many=True)
     user_details = serializers.SerializerMethodField(read_only=True)
+    min_price = serializers.SerializerMethodField(read_only=True)
+    min_delivery_time = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
-        read_only_fields = ['user', 'min_price', 'min_delivery_time']
+        # read_only_fields = ['user']
 
     def get_user_details(self, obj):
         user = obj.user
@@ -41,6 +44,12 @@ class OfferListSerializer(serializers.ModelSerializer):
             'last_name': user.last_name,
             'username': user.username
         }
+    
+    def get_min_price(self, obj):
+        return obj.details.aggregate(min_price=Min('price'))['min_price']
+    
+    def get_min_delivery_time(self, obj):
+        return obj.details.aggregate(min_delivery_time=Min('delivery_time_in_days'))['min_delivery_time']
 
 
 class OfferSerializer(serializers.ModelSerializer):
@@ -48,17 +57,14 @@ class OfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time']
-        read_only_fields = ['user', 'min_price', 'min_delivery_time']
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details']
+        read_only_fields = ['user', 'created_at', 'updated_at']
     
     def validate_details(self, data):
-        # print('details data:', data)
-
         if len(data) != 3:
             raise serializers.ValidationError('Need 3 details!')
         
         offer_types = [offer_detail['offer_type'] for offer_detail in data]
-        # print('offer_types:', offer_types)
         if 'basic' not in offer_types:
             raise serializers.ValidationError('basic is not available!')
         if 'standard' not in offer_types:
@@ -70,11 +76,14 @@ class OfferSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         print('validated_data:', validated_data)
         offer_details_list = validated_data.pop('details')
-        min_price = min([offer_details_item['price'] for offer_details_item in offer_details_list])
-        print('min_price:', min_price)
-        min_delivery_time = min([offer_details_item['delivery_time_in_days'] for offer_details_item in offer_details_list])
-        print('min_delivery_time:', min_delivery_time)
         offer_details = [OfferDetail(**item) for item in offer_details_list]
-        offer = Offer.objects.create(min_price=min_price, min_delivery_time=min_delivery_time, **validated_data)
+        offer = Offer.objects.create(**validated_data)
         offer.details.set(offer_details, bulk=False)
         return offer
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        fields_to_remove = ['user', 'created_at', 'updated_at']
+        for field in fields_to_remove:
+            representation.pop(field, None)
+        return representation

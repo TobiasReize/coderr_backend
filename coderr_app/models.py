@@ -10,8 +10,6 @@ class Offer(models.Model):
     image = models.FileField(upload_to='uploads/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    min_price = models.DecimalField(max_digits=100, decimal_places=2)
-    min_delivery_time = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return self.title
