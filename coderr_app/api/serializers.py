@@ -28,8 +28,8 @@ class OfferDetailUrlSerializer(serializers.ModelSerializer):
 
 class OfferGetAdditionalFieldsSerializer(serializers.ModelSerializer):
     user_details = serializers.SerializerMethodField(read_only=True)
-    min_price = serializers.SerializerMethodField(read_only=True)
-    min_delivery_time = serializers.SerializerMethodField(read_only=True)
+    min_price = serializers.ReadOnlyField()
+    min_delivery_time = serializers.ReadOnlyField()
 
     class Meta:
         model = Offer
@@ -42,12 +42,6 @@ class OfferGetAdditionalFieldsSerializer(serializers.ModelSerializer):
             'last_name': user.last_name,
             'username': user.username
         }
-    
-    def get_min_price(self, obj):
-        return obj.details.aggregate(min_price=Min('price'))['min_price']
-    
-    def get_min_delivery_time(self, obj):
-        return obj.details.aggregate(min_delivery_time=Min('delivery_time_in_days'))['min_delivery_time']
 
 
 class OfferListSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):

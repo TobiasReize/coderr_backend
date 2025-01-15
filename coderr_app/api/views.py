@@ -1,5 +1,6 @@
 from rest_framework import viewsets, generics, filters
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Min
 
 from coderr_app.models import Offer, OfferDetail
 from .serializers import OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer
@@ -8,13 +9,13 @@ from .filters import CustomOfferFilter
 
 
 class OfferViewSet(viewsets.ModelViewSet):
-    queryset = Offer.objects.all()
-    # serializer_class = OfferSerializer
-    # permission_classes = [IsOwnerOrAdmin]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CustomOfferFilter
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
+
+    def get_queryset(self):
+        return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))
 
     def list(self, request, *args, **kwargs):
         self.serializer_class = OfferListSerializer
