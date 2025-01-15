@@ -26,16 +26,14 @@ class OfferDetailUrlSerializer(serializers.ModelSerializer):
         return f"/offerdetails/{obj.id}/"
 
 
-class OfferListSerializer(serializers.ModelSerializer):
-    details = OfferDetailUrlSerializer(many=True)
+class OfferGetAdditionalFieldsSerializer(serializers.ModelSerializer):
     user_details = serializers.SerializerMethodField(read_only=True)
     min_price = serializers.SerializerMethodField(read_only=True)
     min_delivery_time = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Offer
-        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
-        # read_only_fields = ['user']
+        fields = ['min_price', 'min_delivery_time', 'user_details']
 
     def get_user_details(self, obj):
         user = obj.user
@@ -52,7 +50,23 @@ class OfferListSerializer(serializers.ModelSerializer):
         return obj.details.aggregate(min_delivery_time=Min('delivery_time_in_days'))['min_delivery_time']
 
 
-class OfferSerializer(serializers.ModelSerializer):
+class OfferListSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
+    details = OfferDetailUrlSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+
+
+class OfferRetrieveSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
+    details = OfferDetailSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+
+
+class OfferCreateSerializer(serializers.ModelSerializer):
     details = OfferDetailSerializer(many=True)
 
     class Meta:
