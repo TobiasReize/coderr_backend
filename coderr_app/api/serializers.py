@@ -52,11 +52,31 @@ class OfferListSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelS
 
 
 class OfferDetailSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
-    details = DetailedOfferSerializer(many=True, read_only=True)
+    details = DetailedOfferSerializer(many=True)
 
     class Meta:
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
+        read_only_fields = ['user', 'created_at', 'updated_at']
+    
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+
+        if 'details' in validated_data:
+            offer_details_data = validated_data.pop('details')
+            for detail_data in offer_details_data:
+                type = detail_data.get('offer_type')
+                detail_instance = instance.details.get(offer_type=type)
+                detail_instance.title = detail_data.get('title', detail_instance.title)
+                detail_instance.revisions = detail_data.get('revisions', detail_instance.revisions)
+                detail_instance.delivery_time_in_days = detail_data.get('delivery_time_in_days', detail_instance.delivery_time_in_days)
+                detail_instance.price = detail_data.get('price', detail_instance.price)
+                detail_instance.features = detail_data.get('features', detail_instance.features)
+                detail_instance.save()
+
+        instance.save()
+        return instance
 
 
 class OfferCreateSerializer(serializers.ModelSerializer):
