@@ -3,18 +3,19 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Min
 
 from coderr_app.models import Offer, OfferDetail
-from .serializers import OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer
+from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferDetailSerializer
 from .permissions import IsOwnerOrAdmin
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
 
 
-class OfferViewSet(viewsets.ModelViewSet):
+class OfferListCreateView(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CustomOfferFilter
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
     pagination_class = OfferPageNumberPagination
+    # permission_classes = [IsProvider]
 
     def get_queryset(self):
         return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))
@@ -22,10 +23,6 @@ class OfferViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         self.serializer_class = OfferListSerializer
         return super().list(request, *args, **kwargs)
-    
-    def retrieve(self, request, *args, **kwargs):
-        self.serializer_class = OfferRetrieveSerializer
-        return super().retrieve(request, *args, **kwargs)
     
     def create(self, request, *args, **kwargs):
         self.serializer_class = OfferCreateSerializer
@@ -35,9 +32,17 @@ class OfferViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class OfferDetailView(generics.RetrieveAPIView):
-    queryset = OfferDetail.objects.all()
+class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OfferDetailSerializer
+    permission_classes = [IsOwnerOrAdmin]
+
+    def get_queryset(self):
+        return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))
+
+
+class DetailedOfferView(generics.RetrieveAPIView):
+    queryset = OfferDetail.objects.all()
+    serializer_class = DetailedOfferSerializer
 
 
 class OrderViewSet(viewsets.ModelViewSet):

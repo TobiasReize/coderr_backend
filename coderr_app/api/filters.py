@@ -1,5 +1,4 @@
 from django_filters import rest_framework as filters
-from django.db.models import Min
 from coderr_app.models import Offer
 
 

@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from django.db.models import Min
 from coderr_app.models import Offer, OfferDetail
 
 
-class OfferDetailSerializer(serializers.ModelSerializer):
+class DetailedOfferSerializer(serializers.ModelSerializer):
     class Meta:
         model = OfferDetail
         fields = ['id', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
@@ -15,7 +14,7 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         return data
 
 
-class OfferDetailUrlSerializer(serializers.ModelSerializer):
+class DetailedOfferUrlSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -45,15 +44,15 @@ class OfferGetAdditionalFieldsSerializer(serializers.ModelSerializer):
 
 
 class OfferListSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
-    details = OfferDetailUrlSerializer(many=True, read_only=True)
+    details = DetailedOfferUrlSerializer(many=True, read_only=True)
 
     class Meta:
         model = Offer
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
 
 
-class OfferRetrieveSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
-    details = OfferDetailSerializer(many=True, read_only=True)
+class OfferDetailSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
+    details = DetailedOfferSerializer(many=True, read_only=True)
 
     class Meta:
         model = Offer
@@ -61,7 +60,7 @@ class OfferRetrieveSerializer(OfferGetAdditionalFieldsSerializer, serializers.Mo
 
 
 class OfferCreateSerializer(serializers.ModelSerializer):
-    details = OfferDetailSerializer(many=True)
+    details = DetailedOfferSerializer(many=True)
 
     class Meta:
         model = Offer
