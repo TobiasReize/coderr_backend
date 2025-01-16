@@ -1,6 +1,7 @@
 from rest_framework import viewsets, generics, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Min
+from rest_framework.response import Response
 
 from coderr_app.models import Offer, OfferDetail
 from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer
@@ -41,6 +42,11 @@ class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
             return OfferUpdateSerializer
         else:
             return OfferRetrieveDeleteSerializer
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({})
 
 
 class DetailedOfferView(generics.RetrieveAPIView):
