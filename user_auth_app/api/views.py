@@ -3,6 +3,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from django.utils.timezone import now
 from .serializers import RegistrationSerializer
 
 
@@ -28,4 +29,24 @@ class RegistrationView(APIView):
 
 
 class CustomLoginView(ObtainAuthToken):
-    pass
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        data = {}
+
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            user.last_login = now()
+            user.save(update_fields=['last_login'])
+            token, created = Token.objects.get_or_create(user=user)
+            data = {
+                'token': token.key,
+                'username': user.username,
+                'email': user.email,
+                'user_id': user.id
+            }
+        else:
+            data = serializer.errors
+
+        return Response(data)
