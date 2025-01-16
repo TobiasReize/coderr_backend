@@ -102,15 +102,11 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ['id', 'title', 'description', 'details']
+        fields = ['id', 'title', 'details']
     
     def update(self, instance, validated_data):
-        data = {}
+        response_data = {}
         instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
-        data['id'] = instance.id
-        data['title'] = instance.title
-        data['description'] = instance.description
 
         if 'details' in validated_data:
             offer_details_data = validated_data.pop('details')
@@ -123,25 +119,22 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
                 detail_instance.price = detail_data.get('price', detail_instance.price)
                 detail_instance.features = detail_data.get('features', detail_instance.features)
                 detail_instance.save()
-                
-                data['details'] = [
-                    {
-                        'id': detail_instance.id,
-                        'title': detail_instance.title,
-                        'revisions': detail_instance.revisions,
-                        'delivery_time_in_days': detail_instance.delivery_time_in_days,
-                        'price': detail_instance.price,
-                        'features': detail_instance.features,
-                        'offer_type': detail_instance.offer_type
-                    }
-                ]
+
+                response_data = {
+                    'id': instance.id,
+                    'title': instance.title,
+                    'details': [
+                        {
+                            'id': detail_instance.id,
+                            'title': detail_instance.title,
+                            'revisions': detail_instance.revisions,
+                            'delivery_time_in_days': detail_instance.delivery_time_in_days,
+                            'price': detail_instance.price,
+                            'features': detail_instance.features,
+                            'offer_type': detail_instance.offer_type
+                        }
+                    ]
+                }
 
         instance.save()
-        return data
-    
-    # def to_representation(self, instance):
-    #     request_method = self.context['request'].method
-    #     if request_method == 'PATCH':
-    #         return self.handle_patch_representation(instance)
-    #     else:
-    #         return super().to_representation(instance)
+        return response_data
