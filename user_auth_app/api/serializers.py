@@ -39,5 +39,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
             account = User(username=username, email=email)
             account.set_password(pw)
             account.save()
-            user_profil = UserProfile.objects.create(user=account, username=username, type=type, email=email)
+            UserProfile.objects.create(user=account, username=username, type=type, email=email)
             return account
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = UserProfile
+        fields = '__all__'

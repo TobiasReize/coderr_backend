@@ -1,10 +1,14 @@
+from rest_framework import mixins
+from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.utils.timezone import now
-from .serializers import RegistrationSerializer
+
+from .serializers import RegistrationSerializer, UserProfileSerializer
+from user_auth_app.models import UserProfile
 
 
 class RegistrationView(APIView):
@@ -50,3 +54,8 @@ class CustomLoginView(ObtainAuthToken):
             data = serializer.errors
 
         return Response(data)
+
+
+class UserProfileDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
