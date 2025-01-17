@@ -8,6 +8,7 @@ from django.utils.timezone import now
 
 from .serializers import RegistrationSerializer, UserProfileSerializer
 from user_auth_app.models import UserProfile
+from shared.permissions import IsOwnerOrAdmin
 
 
 class RegistrationView(APIView):
@@ -58,3 +59,4 @@ class CustomLoginView(ObtainAuthToken):
 class UserProfileDetailView(RetrieveAPIView, UpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+    permission_classes = [IsOwnerOrAdmin]

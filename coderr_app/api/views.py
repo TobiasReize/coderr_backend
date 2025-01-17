@@ -3,8 +3,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Min
 
 from coderr_app.models import Offer, OfferDetail
+from shared.permissions import IsOwnerOrAdmin
 from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer
-from .permissions import IsOwnerOrAdmin
+from .permissions import IsProvider
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
 
