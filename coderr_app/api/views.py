@@ -16,7 +16,7 @@ class OfferListCreateView(generics.ListCreateAPIView):
     search_fields = ['title', 'description']
     ordering_fields = ['updated_at', 'min_price']
     pagination_class = OfferPageNumberPagination
-    # permission_classes = [IsProvider]
+    permission_classes = [IsProvider]
 
     def get_queryset(self):
         return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))

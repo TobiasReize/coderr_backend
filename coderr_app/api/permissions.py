@@ -6,5 +6,5 @@ class IsProvider(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         elif request.method == 'POST':
-            return request.user.is_authenticated and (request.user__type == 'business')
+            return request.user.is_authenticated and (request.user.userprofile.type == 'business')
         return False
