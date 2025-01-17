@@ -49,5 +49,9 @@ class DetailedOfferView(generics.RetrieveAPIView):
     serializer_class = DetailedOfferSerializer
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderListCreateView(generics.ListCreateAPIView):
+    pass
+
+
+class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
     pass
