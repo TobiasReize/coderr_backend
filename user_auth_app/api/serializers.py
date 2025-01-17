@@ -43,34 +43,21 @@ class RegistrationSerializer(serializers.ModelSerializer):
             return account
 
 
-class UserProfileRetrieveSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UserProfile
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type', 'email', 'created_at']
 
-
-class UserProfileUpdateSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = UserProfile
-        exclude = ['id', 'user', 'file', 'type', 'created_at']
-
     def update(self, instance, validated_data):
-        instance.user.username = validated_data.get('username', instance.username)
-        instance.user.first_name = validated_data.get('first_name', instance.first_name)
-        instance.user.last_name = validated_data.get('last_name', instance.last_name)
-        instance.user.email = validated_data.get('email', instance.email)
-
-        instance.username = validated_data.get('username', instance.username)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
-        instance.location = validated_data.get('location', instance.location)
-        instance.tel = validated_data.get('tel', instance.tel)
-        instance.description = validated_data.get('description', instance.description)
-        instance.working_hours = validated_data.get('working_hours', instance.working_hours)
+        for field in self.Meta.fields:
+            if field in validated_data:
+                setattr(instance, field, validated_data[field])
         
+        for field in ['username', 'first_name', 'last_name', 'email']:
+            if field in validated_data:
+                setattr(instance.user, field, validated_data[field])
+
         instance.user.save()
         instance.save()
 
