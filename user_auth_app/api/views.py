@@ -1,5 +1,4 @@
-from rest_framework import mixins
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -56,6 +55,6 @@ class CustomLoginView(ObtainAuthToken):
         return Response(data)
 
 
-class UserProfileDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericAPIView):
+class UserProfileDetailView(RetrieveAPIView, UpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
