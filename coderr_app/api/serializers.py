@@ -56,8 +56,7 @@ class OfferCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details']
-        read_only_fields = ['user', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'image', 'description', 'created_at', 'updated_at', 'details']
     
     def validate_details(self, data):
         if len(data) != 3:
@@ -79,13 +78,6 @@ class OfferCreateSerializer(serializers.ModelSerializer):
         offer = Offer.objects.create(**validated_data)
         offer.details.set(offer_details, bulk=False)
         return offer
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        fields_to_remove = ['user', 'created_at', 'updated_at']
-        for field in fields_to_remove:
-            representation.pop(field, None)
-        return representation
 
 
 class OfferRetrieveDeleteSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
