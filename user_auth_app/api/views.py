@@ -1,4 +1,4 @@
-from rest_framework.generics import RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.utils.timezone import now
 
-from .serializers import RegistrationSerializer, UserProfileSerializer
+from .serializers import RegistrationSerializer, UserProfileSerializer, BusinessUserSerializer, CustomerUserSerializer
 from user_auth_app.models import UserProfile
 from shared.permissions import IsOwnerOrAdmin
 
@@ -60,3 +60,13 @@ class UserProfileDetailView(RetrieveAPIView, UpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsOwnerOrAdmin]
+
+
+class BusinessUserView(ListAPIView):
+    queryset = UserProfile.objects.filter(type='business')
+    serializer_class = BusinessUserSerializer
+
+
+class CustomerUserView(ListAPIView):
+    queryset = UserProfile.objects.filter(type='customer')
+    serializer_class = CustomerUserSerializer

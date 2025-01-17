@@ -62,3 +62,52 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
+class BusinessUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        response_data = {}
+
+        response_data['user'] = {
+            'pk': representation.get('user'),
+            'username': representation.get('username'),
+            'first_name': representation.get('first_name'),
+            'last_name': representation.get('last_name')
+        }
+        response_data['file'] = representation.get('file')
+        response_data['location'] = representation.get('location')
+        response_data['tel'] = representation.get('tel')
+        response_data['description'] = representation.get('description')
+        response_data['working_hours'] = representation.get('working_hours')
+        response_data['type'] = representation.get('type')
+
+        return response_data
+
+
+class CustomerUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = ['user', 'username', 'first_name', 'last_name', 'file', 'type', 'created_at']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        response_data = {}
+
+        response_data['user'] = {
+            'pk': representation.get('user'),
+            'username': representation.get('username'),
+            'first_name': representation.get('first_name'),
+            'last_name': representation.get('last_name')
+        }
+        response_data['file'] = representation.get('file')
+        response_data['created_at'] = representation.get('created_at')
+        response_data['type'] = representation.get('type')
+
+        return response_data
