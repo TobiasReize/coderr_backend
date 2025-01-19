@@ -41,7 +41,7 @@ class Order(models.Model):
         ('cancelled', 'CANCELLED')
     ]
 
-    offer = models.ForeignKey(Offer, on_delete=models.CASCADE, related_name='order')
+    offer_detail = models.ForeignKey(OfferDetail, on_delete=models.CASCADE, related_name='order')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
