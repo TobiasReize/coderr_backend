@@ -1,4 +1,5 @@
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
+from rest_framework.views import APIView, Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Min
 
@@ -71,7 +72,6 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     http_method_names = ['options', 'get', 'patch', 'delete']
     permission_classes = [OrderIsOwnerOrAdmin]
@@ -87,3 +87,14 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
                 return Order.objects.all()
             else:
                 return Order.objects.none()
+
+
+class OrderCountView(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        business_user = Order.objects.filter(business_user_id=pk)
+        if business_user:
+            queryset = Order.objects.filter(business_user_id=pk, status='in_progress')
+            order_count = queryset.count()
+            return Response({'order_count': order_count}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Business user not found.'}, status=status.HTTP_404_NOT_FOUND)
