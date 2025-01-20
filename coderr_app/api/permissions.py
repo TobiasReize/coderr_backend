@@ -26,6 +26,6 @@ class OrderIsOwnerOrAdmin(BasePermission):
         elif request.method == 'DELETE':
             return request.user.is_authenticated and request.user.is_superuser
         elif request.method == 'PATCH':
-            return (request.user.userprofile == 'business') and (obj.business_user == request.user)
+            return (request.user.userprofile.type == 'business') and (obj.business_user == request.user)
         else:
             return False
