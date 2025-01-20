@@ -8,7 +8,7 @@ class UserProfile(models.Model):
         ('customer', 'CUSTOMER')
     ]
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
     username = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)

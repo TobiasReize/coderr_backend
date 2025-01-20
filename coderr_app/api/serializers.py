@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_app.models import Offer, OfferDetail
+from coderr_app.models import Offer, OfferDetail, Order
 
 
 class DetailedOfferSerializer(serializers.ModelSerializer):
@@ -130,3 +130,18 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return response_data
+
+
+class OrderListCreateSerializer(serializers.ModelSerializer):
+    offer_detail_id = serializers.PrimaryKeyRelatedField(queryset=OfferDetail.objects.all(), write_only=True, source='offer_detail')
+    title = serializers.CharField(source='offer_detail.title', max_length=100, read_only=True)
+    revisions = serializers.IntegerField(source='offer_detail.revisions', read_only=True)
+    delivery_time_in_days = serializers.IntegerField(source='offer_detail.delivery_time_in_days', read_only=True)
+    price = serializers.DecimalField(source='offer_detail.price', max_digits=10, decimal_places=2, read_only=True)
+    features = serializers.ListField(source='offer_detail.features', child=serializers.CharField(max_length=100), read_only=True)
+    offer_type = serializers.ChoiceField(source='offer_detail.offer_type', choices=['basic', 'standard', 'premium'], read_only=True)
+    
+    class Meta:
+        model = Order
+        fields = ['id', 'customer_user', 'business_user', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type', 'status', 'created_at', 'updated_at', 'offer_detail_id']
+        read_only_fields = ['customer_user', 'business_user', 'status' 'created_at', 'updated_at']

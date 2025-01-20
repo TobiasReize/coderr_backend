@@ -1,10 +1,10 @@
-from rest_framework import viewsets, generics, filters
+from rest_framework import generics, filters
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Min
 
-from coderr_app.models import Offer, OfferDetail
+from coderr_app.models import Offer, OfferDetail, Order
 from shared.permissions import IsOwnerOrAdmin
-from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer
+from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderListCreateSerializer
 from .permissions import IsProviderOrAdmin
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
@@ -50,7 +50,24 @@ class DetailedOfferView(generics.RetrieveAPIView):
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
-    pass
+    queryset = Order.objects.all()
+    serializer_class = OrderListCreateSerializer
+
+    def get_queryset(self):
+        try:
+            if self.request.user.userprofile.type == 'customer':
+                return Order.objects.filter(customer_user=self.request.user)
+            elif self.request.user.userprofile.type == 'business':
+                return Order.objects.filter(business_user=self.request.user)
+        except:
+            if self.request.user.is_superuser:
+                return Order.objects.all()
+            else:
+                return Order.objects.none()
+
+    def perform_create(self, serializer):
+        offer_detail = serializer.validated_data['offer_detail']
+        serializer.save(customer_user=self.request.user, business_user=offer_detail.offer.user)
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
