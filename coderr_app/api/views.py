@@ -98,3 +98,14 @@ class OrderCountView(APIView):
             return Response({'order_count': order_count}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Business user not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class CompletedOrderCountView(APIView):
+    def get(self, request, pk, *args, **kwargs):
+        business_user = Order.objects.filter(business_user_id=pk)
+        if business_user:
+            queryset = Order.objects.filter(business_user_id=pk, status='completed')
+            order_count = queryset.count()
+            return Response({'completed_order_count': order_count}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Business user not found.'}, status=status.HTTP_404_NOT_FOUND)
