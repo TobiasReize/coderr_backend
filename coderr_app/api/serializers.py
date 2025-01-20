@@ -132,7 +132,7 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
         return response_data
 
 
-class OrderListCreateSerializer(serializers.ModelSerializer):
+class OrderSerializer(serializers.ModelSerializer):
     offer_detail_id = serializers.PrimaryKeyRelatedField(queryset=OfferDetail.objects.all(), write_only=True, source='offer_detail')
     title = serializers.CharField(source='offer_detail.title', max_length=100, read_only=True)
     revisions = serializers.IntegerField(source='offer_detail.revisions', read_only=True)
@@ -145,3 +145,10 @@ class OrderListCreateSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id', 'customer_user', 'business_user', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type', 'status', 'created_at', 'updated_at', 'offer_detail_id']
         read_only_fields = ['customer_user', 'business_user', 'status' 'created_at', 'updated_at']
+
+    def update(self, instance, validated_data):
+        if len(validated_data) > 1 or 'status' not in validated_data:
+            raise serializers.ValidationError("Only the 'status' field can be updated.")
+        instance.status = validated_data.get('status', instance.status)
+        instance.save()
+        return instance

@@ -4,8 +4,8 @@ from django.db.models import Min
 
 from coderr_app.models import Offer, OfferDetail, Order
 from shared.permissions import IsOwnerOrAdmin
-from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderListCreateSerializer
-from .permissions import IsProviderOrAdmin
+from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer
+from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
 
@@ -50,8 +50,7 @@ class DetailedOfferView(generics.RetrieveAPIView):
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderListCreateSerializer
+    serializer_class = OrderSerializer
 
     def get_queryset(self):
         try:
@@ -71,4 +70,19 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
-    pass
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    http_method_names = ['options', 'get', 'patch', 'delete']
+    permission_classes = [OrderIsOwnerOrAdmin]
+
+    def get_queryset(self):
+        try:
+            if self.request.user.userprofile.type == 'customer':
+                return Order.objects.filter(customer_user=self.request.user)
+            elif self.request.user.userprofile.type == 'business':
+                return Order.objects.filter(business_user=self.request.user)
+        except:
+            if self.request.user.is_superuser:
+                return Order.objects.all()
+            else:
+                return Order.objects.none()
