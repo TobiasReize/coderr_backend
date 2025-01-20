@@ -5,7 +5,7 @@ from django.db.models import Min
 from coderr_app.models import Offer, OfferDetail, Order
 from shared.permissions import IsOwnerOrAdmin
 from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer
-from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin
+from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin, IsCustomerOrAdmin
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
 
@@ -51,6 +51,7 @@ class DetailedOfferView(generics.RetrieveAPIView):
 
 class OrderListCreateView(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
+    permission_classes = [IsCustomerOrAdmin]
 
     def get_queryset(self):
         try:
