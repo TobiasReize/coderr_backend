@@ -96,11 +96,13 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ['id', 'title', 'details']
+        fields = ['id', 'title', 'description', 'image', 'details']
     
     def update(self, instance, validated_data):
         response_data = {}
         instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.image = validated_data.get('image', instance.image)
 
         if 'details' in validated_data:
             offer_details_data = validated_data.pop('details')
@@ -117,6 +119,8 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
                 response_data = {
                     'id': instance.id,
                     'title': instance.title,
+                    'description': instance.description,
+                    'image': instance.image,
                     'details': [
                         {
                             'id': detail_instance.id,

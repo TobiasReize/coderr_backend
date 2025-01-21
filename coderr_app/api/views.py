@@ -92,7 +92,7 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class OrderCountView(APIView):
     def get(self, request, pk, *args, **kwargs):
-        business_user = Order.objects.filter(business_user_id=pk)
+        business_user = UserProfile.objects.filter(user=pk)
         if business_user:
             queryset = Order.objects.filter(business_user_id=pk, status='in_progress')
             order_count = queryset.count()
@@ -103,7 +103,7 @@ class OrderCountView(APIView):
 
 class CompletedOrderCountView(APIView):
     def get(self, request, pk, *args, **kwargs):
-        business_user = Order.objects.filter(business_user_id=pk)
+        business_user = UserProfile.objects.filter(user=pk)
         if business_user:
             queryset = Order.objects.filter(business_user_id=pk, status='completed')
             order_count = queryset.count()
