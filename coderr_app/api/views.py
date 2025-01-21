@@ -1,9 +1,10 @@
 from rest_framework import generics, filters, status, viewsets
 from rest_framework.views import APIView, Response
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Min
+from django.db.models import Min, Avg
 
 from coderr_app.models import Offer, OfferDetail, Order, Review
+from user_auth_app.models import UserProfile
 from shared.permissions import IsOwnerOrAdmin
 from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer, ReviewSerializer
 from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin, IsCustomerOrAdmin, ReviewIsOwner
@@ -122,3 +123,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(reviewer=self.request.user)
+
+
+class BaseInfoView(APIView):
+    def get(self, request):
+        review_count = Review.objects.all().count()
+        average_rating = round(Review.objects.aggregate(Avg('rating', default=0))['rating__avg'], 1)
+        business_profile_count = UserProfile.objects.filter(type='business').count()
+        offer_count = Offer.objects.all().count()
+
+        data = {
+            'review_count': review_count,
+            'average_rating': average_rating,
+            'business_profile_count': business_profile_count,
+            'offer_count': offer_count
+        }
+        return Response(data, status=status.HTTP_200_OK)
