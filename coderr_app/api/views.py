@@ -1,11 +1,11 @@
-from rest_framework import generics, filters, status
+from rest_framework import generics, filters, status, viewsets
 from rest_framework.views import APIView, Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Min
 
-from coderr_app.models import Offer, OfferDetail, Order
+from coderr_app.models import Offer, OfferDetail, Order, Review
 from shared.permissions import IsOwnerOrAdmin
-from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer
+from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer, ReviewSerializer
 from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin, IsCustomerOrAdmin
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
@@ -109,3 +109,12 @@ class CompletedOrderCountView(APIView):
             return Response({'completed_order_count': order_count}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Business user not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsCustomerOrAdmin]
+
+    def perform_create(self, serializer):
+        serializer.save(reviewer=self.request.user)

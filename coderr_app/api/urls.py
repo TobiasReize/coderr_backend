@@ -1,9 +1,14 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import OfferDetailView, OfferListCreateView, DetailedOfferView, OrderListCreateView, OrderDetailView, OrderCountView, CompletedOrderCountView
+from .views import OfferDetailView, OfferListCreateView, DetailedOfferView, OrderListCreateView, OrderDetailView, OrderCountView, CompletedOrderCountView, ReviewViewSet
+
+
+router = routers.SimpleRouter()
+router.register(r'reviews', ReviewViewSet)
 
 
 urlpatterns = [
+    path('', include(router.urls)),
     path('offers/', OfferListCreateView.as_view(), name='offer'),
     path('offers/<int:pk>/', OfferDetailView.as_view(), name='offer-detail'),
     path('offerdetails/<int:pk>/', DetailedOfferView.as_view(), name='detailed-offer'),

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from coderr_app.models import Offer, OfferDetail, Order
+from coderr_app.models import Offer, OfferDetail, Order, Review
+from django.contrib.auth.models import User
 
 
 class DetailedOfferSerializer(serializers.ModelSerializer):
@@ -152,3 +153,10 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.status = validated_data.get('status', instance.status)
         instance.save()
         return instance
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id', 'business_user', 'reviewer', 'rating', 'description', 'created_at', 'updated_at']
+        read_only_fields = ['reviewer', 'created_at', 'updated_at']
