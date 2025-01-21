@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from coderr_app.models import Offer, OfferDetail, Order, Review
 from django.contrib.auth.models import User
+from coderr_app.models import Offer, OfferDetail, Order, Review
+from user_auth_app.models import UserProfile
 
 
 class DetailedOfferSerializer(serializers.ModelSerializer):
@@ -160,3 +161,17 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ['id', 'business_user', 'reviewer', 'rating', 'description', 'created_at', 'updated_at']
         read_only_fields = ['reviewer', 'created_at', 'updated_at']
+
+    def validate(self, data):
+        user = self.context['request'].user
+        business_user = data['business_user']
+        
+        if Review.objects.filter(reviewer=user, business_user=business_user).exists():
+            raise serializers.ValidationError("You have already reviewed this business user.")
+        return data
+
+    def validate_business_user(self, data):
+        if UserProfile.objects.get(user=data).type != 'business':
+            raise serializers.ValidationError("User is not a business user.")
+        else:
+            return data
