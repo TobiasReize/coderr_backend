@@ -164,9 +164,9 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = self.context['request'].user
-        business_user = data['business_user']
+        business_user = data.get('business_user')
         
-        if Review.objects.filter(reviewer=user, business_user=business_user).exists():
+        if business_user and Review.objects.filter(reviewer=user, business_user=business_user).exists():
             raise serializers.ValidationError("You have already reviewed this business user.")
         return data
 
@@ -175,3 +175,14 @@ class ReviewSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User is not a business user.")
         else:
             return data
+
+    def update(self, instance, validated_data):
+        if len(validated_data) > 2:
+            raise serializers.ValidationError("Only the 'rating' and 'description' field can be updated.")
+        elif ('rating' not in validated_data) and ('description' not in validated_data):
+            raise serializers.ValidationError("Only the 'rating' and 'description' field can be updated.")
+        
+        instance.rating = validated_data.get('rating', instance.rating)
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance

@@ -29,3 +29,10 @@ class OrderIsOwnerOrAdmin(BasePermission):
             return (request.user.userprofile.type == 'business') and (obj.business_user == request.user)
         else:
             return False
+
+
+class ReviewIsOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in ['DELETE', 'PATCH']:
+            return request.user.is_authenticated and obj.reviewer == request.user
+        return False

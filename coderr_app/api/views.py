@@ -6,7 +6,7 @@ from django.db.models import Min
 from coderr_app.models import Offer, OfferDetail, Order, Review
 from shared.permissions import IsOwnerOrAdmin
 from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer, ReviewSerializer
-from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin, IsCustomerOrAdmin
+from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin, IsCustomerOrAdmin, ReviewIsOwner
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
 
@@ -114,10 +114,11 @@ class CompletedOrderCountView(APIView):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsCustomerOrAdmin]
+    permission_classes = [IsCustomerOrAdmin | ReviewIsOwner]
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['business_user_id', 'reviewer_id']
     ordering_fields = ['updated_at', 'rating']
+    http_method_names = ['options', 'get', 'post', 'patch', 'delete']
 
     def perform_create(self, serializer):
         serializer.save(reviewer=self.request.user)
