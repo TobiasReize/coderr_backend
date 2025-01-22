@@ -4,6 +4,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework import status
 from django.utils.timezone import now
 
 from .serializers import RegistrationSerializer, UserProfileSerializer, BusinessUserSerializer, CustomerUserSerializer
@@ -27,9 +28,11 @@ class RegistrationView(APIView):
                 'email': saved_account.email,
                 'user_id': saved_account.id
             }
+            resp_status = status.HTTP_200_OK
         else:
             data = serializer.errors
-        return Response(data)
+            resp_status = status.HTTP_400_BAD_REQUEST
+        return Response(data, status=resp_status)
 
 
 class CustomLoginView(ObtainAuthToken):
@@ -50,10 +53,11 @@ class CustomLoginView(ObtainAuthToken):
                 'email': user.email,
                 'user_id': user.id
             }
+            resp_status = status.HTTP_200_OK
         else:
             data = serializer.errors
-
-        return Response(data)
+            resp_status = status.HTTP_400_BAD_REQUEST
+        return Response(data, status=resp_status)
 
 
 class UserProfileDetailView(RetrieveAPIView, UpdateAPIView):

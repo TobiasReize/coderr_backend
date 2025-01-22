@@ -91,7 +91,6 @@ class BusinessUserSerializer(serializers.ModelSerializer):
         response_data['description'] = representation.get('description')
         response_data['working_hours'] = representation.get('working_hours')
         response_data['type'] = representation.get('type')
-
         return response_data
 
 
@@ -114,5 +113,4 @@ class CustomerUserSerializer(serializers.ModelSerializer):
         response_data['file'] = representation.get('file')
         response_data['created_at'] = representation.get('created_at')
         response_data['type'] = representation.get('type')
-
         return response_data
