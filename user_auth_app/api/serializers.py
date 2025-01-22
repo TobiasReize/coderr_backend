@@ -43,12 +43,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
             return account
 
 
-class UserProfileUpdateSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type', 'email', 'created_at']
 
     def update(self, instance, validated_data):
+        print('validated_data:', validated_data)
         for field in self.Meta.fields:
             if field in validated_data:
                 setattr(instance, field, validated_data[field])
@@ -60,18 +61,12 @@ class UserProfileUpdateSerializer(serializers.ModelSerializer):
         instance.user.save()
         instance.save()
         return instance
-
-
-class UserProfileRetrieveSerializer(serializers.ModelSerializer):
-    file = serializers.SerializerMethodField()
-
-    class Meta:
-        model = UserProfile
-        fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type', 'email', 'created_at']
-
-    def get_file(self, obj):
-        if obj.file:
-            return obj.file.url
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        if instance.file:
+            representation['file'] = instance.file.url
+        return representation
 
 
 class BusinessUserSerializer(serializers.ModelSerializer):

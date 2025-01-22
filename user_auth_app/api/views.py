@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from django.utils.timezone import now
 
-from .serializers import RegistrationSerializer, UserProfileUpdateSerializer, UserProfileRetrieveSerializer, BusinessUserSerializer, CustomerUserSerializer
+from .serializers import RegistrationSerializer, UserProfileSerializer, BusinessUserSerializer, CustomerUserSerializer
 from user_auth_app.models import UserProfile
 from shared.permissions import IsOwnerOrAdmin
 
@@ -58,13 +58,8 @@ class CustomLoginView(ObtainAuthToken):
 
 class UserProfileDetailView(RetrieveAPIView, UpdateAPIView):
     queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
     permission_classes = [IsOwnerOrAdmin]
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return UserProfileRetrieveSerializer
-        else:
-            return UserProfileUpdateSerializer
 
 
 class BusinessUserView(ListAPIView):
