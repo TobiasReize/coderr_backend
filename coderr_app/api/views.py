@@ -6,7 +6,7 @@ from django.db.models import Min, Avg
 from coderr_app.models import Offer, OfferDetail, Order, Review
 from user_auth_app.models import UserProfile
 from shared.permissions import IsOwnerOrAdmin
-from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferRetrieveDeleteSerializer, OfferUpdateSerializer, OrderSerializer, ReviewSerializer
+from .serializers import OfferCreateSerializer, DetailedOfferSerializer, OfferListSerializer, OfferDetailSerializer, OrderSerializer, ReviewSerializer
 from .permissions import IsProviderOrAdmin, OrderIsOwnerOrAdmin, IsCustomerOrAdmin, ReviewIsOwner
 from .filters import CustomOfferFilter
 from .pagination import OfferPageNumberPagination
@@ -34,16 +34,11 @@ class OfferListCreateView(generics.ListCreateAPIView):
 
 
 class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = OfferDetailSerializer
     permission_classes = [IsOwnerOrAdmin]
 
     def get_queryset(self):
         return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))
-    
-    def get_serializer_class(self):
-        if self.request.method in ['PATCH', 'PUT']:
-            return OfferUpdateSerializer
-        else:
-            return OfferRetrieveDeleteSerializer
 
 
 class DetailedOfferView(generics.RetrieveAPIView):

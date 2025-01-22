@@ -82,7 +82,7 @@ class OfferCreateSerializer(serializers.ModelSerializer):
         return offer
 
 
-class OfferRetrieveDeleteSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
+class OfferDetailSerializer(OfferGetAdditionalFieldsSerializer, serializers.ModelSerializer):
     details = DetailedOfferSerializer(many=True)
 
     class Meta:
@@ -90,16 +90,8 @@ class OfferRetrieveDeleteSerializer(OfferGetAdditionalFieldsSerializer, serializ
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at', 'updated_at', 'details', 'min_price', 'min_delivery_time', 'user_details']
         read_only_fields = ['user', 'created_at', 'updated_at']
 
-
-class OfferUpdateSerializer(serializers.ModelSerializer):
-    details = DetailedOfferSerializer(many=True)
-
-    class Meta:
-        model = Offer
-        fields = ['id', 'title', 'description', 'image', 'details']
-    
     def update(self, instance, validated_data):
-        response_data = {}
+        print('validated_data:', validated_data)
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.image = validated_data.get('image', instance.image)
@@ -116,26 +108,8 @@ class OfferUpdateSerializer(serializers.ModelSerializer):
                 detail_instance.features = detail_data.get('features', detail_instance.features)
                 detail_instance.save()
 
-                response_data = {
-                    'id': instance.id,
-                    'title': instance.title,
-                    'description': instance.description,
-                    'image': instance.image,
-                    'details': [
-                        {
-                            'id': detail_instance.id,
-                            'title': detail_instance.title,
-                            'revisions': detail_instance.revisions,
-                            'delivery_time_in_days': detail_instance.delivery_time_in_days,
-                            'price': detail_instance.price,
-                            'features': detail_instance.features,
-                            'offer_type': detail_instance.offer_type
-                        }
-                    ]
-                }
-
         instance.save()
-        return response_data
+        return instance
 
 
 class OrderSerializer(serializers.ModelSerializer):
