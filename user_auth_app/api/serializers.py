@@ -44,7 +44,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    
+    file = serializers.SerializerMethodField()
+
     class Meta:
         model = UserProfile
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type', 'email', 'created_at']
@@ -60,8 +61,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         instance.user.save()
         instance.save()
-
         return instance
+    
+    def get_file(self, obj):
+        if obj.file:
+            return obj.file.url
 
 
 class BusinessUserSerializer(serializers.ModelSerializer):

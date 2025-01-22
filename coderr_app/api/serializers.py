@@ -17,7 +17,7 @@ class DetailedOfferSerializer(serializers.ModelSerializer):
 
 
 class DetailedOfferUrlSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField(read_only=True)
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = OfferDetail
@@ -28,7 +28,7 @@ class DetailedOfferUrlSerializer(serializers.ModelSerializer):
 
 
 class OfferGetAdditionalFieldsSerializer(serializers.ModelSerializer):
-    user_details = serializers.SerializerMethodField(read_only=True)
+    user_details = serializers.SerializerMethodField()
     min_price = serializers.ReadOnlyField()
     min_delivery_time = serializers.ReadOnlyField()
 
