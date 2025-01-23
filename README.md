@@ -3,7 +3,7 @@
 ## A Django-based Backend project for a freelance developer platform. You can login as a customer or a business user. Customer make orders and create reviews, Business user can create offers and manage the orders. You can use the easy demo login.<br/>
 Coderr uses the Django and Django Restframework (DRF) to provide individual endpoints, authentication, permissions, filtering, ordering and pagination.
 
-This project is part of the coderr_frontend_v1.1.0
+This project is part of the coderr_frontend_v1.1.0<br/>
 Changes in the config.js: customer guest username: "customer_gest" and business guest username: "business_guest"
 
 ## How to install this repository (Backend):
