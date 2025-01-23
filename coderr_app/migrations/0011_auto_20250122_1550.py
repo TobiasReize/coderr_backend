@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('coderr_app', '0010_alter_review_rating'),
+        ('user_auth_app', '0002_alter_userprofile_user'),
     ]
 
     operations = [
