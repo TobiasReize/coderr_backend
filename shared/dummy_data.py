@@ -8,8 +8,8 @@ from coderr_app.models import Offer, OfferDetail, Order, Review
 def create_dummy_data():
     # User erstellen:
     usernames = ['customer_guest', 'business_guest', 'jannik_schmidt', 'hans_lustig', 'eva_klein', 'maria_gross', 'xaver_steig', 'michael_mueller']
-    first_names = ['Customer', 'Business', 'Jannik', 'Hans', 'Eva', 'Maria', 'Xaver', 'Michael']
-    last_names = ['Guest', 'Guest', 'Schmidt', 'Lustig', 'Klein', 'Gross', 'Steig', 'Mueller']
+    first_names = ['Gast', 'Gast', 'Jannik', 'Hans', 'Eva', 'Maria', 'Xaver', 'Michael']
+    last_names = ['Customer', 'Business', 'Schmidt', 'Lustig', 'Klein', 'Gross', 'Steig', 'Mueller']
     emails = ['customer@guest.de', 'business@guest.de', 'schmidt@user.com', 'hans@test.de', 'eva@dev.com', 'maria@test.de', 'xaver@user.de', 'mueller@test.de']
     passwords = ['asdasd', 'asdasd24', '123456', 'qwertz', '654321', 'test123', '123test', 'asdfgh']
     types = ['customer', 'business', 'customer', 'business', 'customer', 'business', 'customer', 'business']
@@ -60,10 +60,10 @@ def create_dummy_data():
                 last_name=dummy_user.last_name,
                 type=types[index],
                 email=dummy_user.email,
-                location=locations[index],
-                tel=tels[index],
-                description=descriptions[index],
-                working_hours=working_hours[index],
+                location=locations[index // 2],
+                tel=tels[index // 2],
+                description=descriptions[index // 2],
+                working_hours=working_hours[index // 2],
             )
 
     # Offers erstellen:
@@ -72,7 +72,7 @@ def create_dummy_data():
         {
             'title': 'Basic Development',
             'revisions': 5,
-            'delivery_time_in_days': 10,
+            'delivery_time_in_days': 7,
             'price': 112.44,
             'features': ['API-Integration', 'Datenbank-Setup', 'Sicherheitsmaßnahmen'],
             'offer_type': 'basic'
@@ -99,6 +99,7 @@ def create_dummy_data():
         user=User.objects.get(username='business_guest'),
         title='Effiziente Backend-Entwicklung',
         description='Ich erstelle ein einfaches, vollständiges Backend für Ihre Anwendung (15-20 APIs).',
+        image='uploads/backend.png'
     )
     offer_1.details.set(offer_details_1, bulk=False)
 
@@ -107,7 +108,7 @@ def create_dummy_data():
         {
             'title': 'Basic Webentwicklung',
             'revisions': 4,
-            'delivery_time_in_days': 6,
+            'delivery_time_in_days':3,
             'price': 99.99,
             'features': ['Einfache Landing-Page'],
             'offer_type': 'basic'
@@ -134,6 +135,7 @@ def create_dummy_data():
         user=User.objects.get(username='hans_lustig'),
         title='Webentwicklung',
         description='Ich führe Frontend-Webentwicklung in Angular und TypeScript/JavaScript durch.',
+        image='uploads/web_development.png'
     )
     offer_2.details.set(offer_details_2, bulk=False)
 
@@ -169,6 +171,7 @@ def create_dummy_data():
         user=User.objects.get(username='maria_gross'),
         title='Fullstack Development',
         description='Ich entwickle Frontend-, Backend- oder Fullstack-Lösungen nach Ihren Vorstellungen.',
+        image='uploads/fullstack.png'
     )
     offer_3.details.set(offer_details_3, bulk=False)
 
@@ -176,25 +179,25 @@ def create_dummy_data():
     offer_details_list_4 = [
         {
             'title': 'Einfache API Integration',
-            'revisions': 7,
-            'delivery_time_in_days': 7,
-            'price': 99.99,
+            'revisions': 6,
+            'delivery_time_in_days': 3,
+            'price': 73.99,
             'features': ['Fertige API Integration'],
             'offer_type': 'basic'
         },
         {
             'title': 'Standard API Integration',
             'revisions': 10,
-            'delivery_time_in_days': 13,
-            'price': 133.89,
+            'delivery_time_in_days': 7,
+            'price': 154.89,
             'features': ['Fertige API Integration', 'Skalierbarkeit', 'Frontend Integration'],
             'offer_type': 'standard'
         },
         {
             'title': '20 Endpoints',
             'revisions': -1,
-            'delivery_time_in_days': 16,
-            'price': 324.99,
+            'delivery_time_in_days': 12,
+            'price': 323.99,
             'features': ['Individuelle API-Entwicklung', 'Individuelle Frontend Integration', 'Sicherheitsmaßnahmen', 'Skalierbarkeit'],
             'offer_type': 'premium'
         }
@@ -204,6 +207,7 @@ def create_dummy_data():
         user=User.objects.get(username='michael_mueller'),
         title='API Integration',
         description='Ich entwickle und integriere fachmännisch APIs um Frontend und Backend nahtlos zu verbinden.',
+        image='uploads/api_integration.png'
     )
     offer_4.details.set(offer_details_4, bulk=False)
 
@@ -218,7 +222,7 @@ def create_dummy_data():
     )
     
     # Order 2:
-    offer_detail_2 = OfferDetail.objects.get(id=6)
+    offer_detail_2 = OfferDetail.objects.get(id=7)
     order_2 = Order.objects.create(
         offer_detail=offer_detail_2,
         customer_user=User.objects.get(username='customer_guest'),

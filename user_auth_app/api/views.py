@@ -21,6 +21,8 @@ class RegistrationView(APIView):
 
         if serializer.is_valid():
             saved_account = serializer.save()
+            saved_account.last_login = now()
+            saved_account.save(update_fields=['last_login'])
             token, created = Token.objects.get_or_create(user=saved_account)
             data = {
                 'token': token.key,
