@@ -2,6 +2,9 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsProviderOrAdmin(BasePermission):
+    """
+    Only business users can send a POST-Request and admin.
+    """
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS or request.user.is_superuser:
             return True
@@ -11,6 +14,9 @@ class IsProviderOrAdmin(BasePermission):
 
 
 class IsCustomerOrAdmin(BasePermission):
+    """
+    Only customers can send a POST-Request and admin.
+    """
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS or request.user.is_superuser:
             return True
@@ -20,6 +26,9 @@ class IsCustomerOrAdmin(BasePermission):
 
 
 class OrderIsOwnerOrAdmin(BasePermission):
+    """
+    Only owners from the Order object and admin can send a PATCH-Request. Only admin can send a DELETE-Request.
+    """
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS or request.user.is_superuser:
             return True
@@ -32,6 +41,9 @@ class OrderIsOwnerOrAdmin(BasePermission):
 
 
 class ReviewIsOwner(BasePermission):
+    """
+    Only owners from the Review object can send a PATCH- or DELETE-Request.
+    """
     def has_object_permission(self, request, view, obj):
         if request.method in ['DELETE', 'PATCH']:
             return request.user.is_authenticated and obj.reviewer == request.user

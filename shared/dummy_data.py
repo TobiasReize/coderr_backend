@@ -6,6 +6,9 @@ from coderr_app.models import Offer, OfferDetail, Order, Review
 
 
 def create_dummy_data():
+    """
+    Function to create the dummy data and saves them to the database.
+    """
     # User erstellen:
     usernames = ['customer_guest', 'business_guest', 'jannik_schmidt', 'hans_lustig', 'eva_klein', 'maria_gross', 'xaver_steig', 'michael_mueller']
     first_names = ['Gast', 'Gast', 'Jannik', 'Hans', 'Eva', 'Maria', 'Xaver', 'Michael']

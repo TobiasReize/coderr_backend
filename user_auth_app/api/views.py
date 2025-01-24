@@ -16,6 +16,10 @@ class RegistrationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Function for POST-Requests to register new users. If the request is valid, a Token will be generated for the new User.
+        Return value is an object of user data and the token.
+        """
         serializer = RegistrationSerializer(data=request.data)
         data = {}
 
@@ -41,6 +45,9 @@ class CustomLoginView(ObtainAuthToken):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Function for POST-Requests to authenticate the user and login to the application. If the request is valid, an object of user data and the token will be returned.
+        """
         serializer = self.serializer_class(data=request.data)
         data = {}
 
@@ -66,6 +73,7 @@ class UserProfileDetailView(RetrieveAPIView, UpdateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [IsOwnerOrAdmin]
+    http_method_names = ['options', 'get', 'patch']
 
 
 class BusinessUserView(ListAPIView):

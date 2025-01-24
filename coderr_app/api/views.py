@@ -13,6 +13,9 @@ from .pagination import OfferPageNumberPagination
 
 
 class OfferListCreateView(generics.ListCreateAPIView):
+    """
+    View for POST- and GET- (multiple objects) Requests for Offer objects.
+    """
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CustomOfferFilter
     search_fields = ['title', 'description']
@@ -21,9 +24,15 @@ class OfferListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsProviderOrAdmin]
 
     def get_queryset(self):
+        """
+        Returns all Offer objects with the new calculated fields 'min_price' and 'min_delivery_time'.
+        """
         return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))
 
     def get_serializer_class(self):
+        """
+        Depending on the request method it returns the correct serializer.
+        """
         if self.request.method == 'POST':
             return OfferCreateSerializer
         else:
@@ -34,23 +43,38 @@ class OfferListCreateView(generics.ListCreateAPIView):
 
 
 class OfferDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View for GET-, PUT/PATCH- and DELETE-Requests for single Offer objects.
+    """
     serializer_class = OfferDetailSerializer
     permission_classes = [IsOwnerOrAdmin]
 
     def get_queryset(self):
+        """
+        Returns all Offer objects with the new calculated fields 'min_price' and 'min_delivery_time'.
+        """
         return Offer.objects.annotate(min_price=Min('details__price'), min_delivery_time=Min('details__delivery_time_in_days'))
 
 
 class DetailedOfferView(generics.RetrieveAPIView):
+    """
+    View for GET-Requests for single OfferDetail objects.
+    """
     queryset = OfferDetail.objects.all()
     serializer_class = DetailedOfferSerializer
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
+    """
+    View for POST- and GET- (multiple objects) Requests for Order objects.
+    """
     serializer_class = OrderSerializer
     permission_classes = [IsCustomerOrAdmin]
 
     def get_queryset(self):
+        """
+        Depending on the current user it returns the correct queryset.
+        """
         try:
             if self.request.user.userprofile.type == 'customer':
                 return Order.objects.filter(customer_user=self.request.user)
@@ -68,11 +92,17 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
 
 class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View for GET-, PUT/PATCH- and DELETE-Requests for single Order objects.
+    """
     serializer_class = OrderSerializer
     http_method_names = ['options', 'get', 'patch', 'delete']
     permission_classes = [OrderIsOwnerOrAdmin]
 
     def get_queryset(self):
+        """
+        Depending on the current user it returns the correct queryset.
+        """
         try:
             if self.request.user.userprofile.type == 'customer':
                 return Order.objects.filter(customer_user=self.request.user)
@@ -87,6 +117,9 @@ class OrderDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class OrderCountView(APIView):
     def get(self, request, pk, *args, **kwargs):
+        """
+        Returns the number of ongoing orders of a specific business user.
+        """
         business_user = UserProfile.objects.filter(type='business', user=pk)
         if business_user:
             queryset = Order.objects.filter(business_user_id=pk, status='in_progress')
@@ -98,6 +131,9 @@ class OrderCountView(APIView):
 
 class CompletedOrderCountView(APIView):
     def get(self, request, pk, *args, **kwargs):
+        """
+        Returns the number of completed orders of a specific business user.
+        """
         business_user = UserProfile.objects.filter(type='business', user=pk)
         if business_user:
             queryset = Order.objects.filter(business_user_id=pk, status='completed')
@@ -108,6 +144,9 @@ class CompletedOrderCountView(APIView):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for all CRUD operations for Review objects.
+    """
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsCustomerOrAdmin | ReviewIsOwner]
@@ -122,6 +161,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class BaseInfoView(APIView):
     def get(self, request):
+        """
+        Returns an object with basic information.
+        """
         review_count = Review.objects.all().count()
         average_rating = round(Review.objects.aggregate(Avg('rating', default=0))['rating__avg'], 1)
         business_profile_count = UserProfile.objects.filter(type='business').count()

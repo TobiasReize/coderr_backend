@@ -10,6 +10,9 @@ class DetailedOfferSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'revisions', 'delivery_time_in_days', 'price', 'features', 'offer_type']
 
     def validate_features(self, data):
+        """
+        Checks whether the features list field has at least one element.
+        """
         amount = len(data)
         if amount < 1:
             raise serializers.ValidationError('At least one feature is required!')
@@ -24,6 +27,9 @@ class DetailedOfferUrlSerializer(serializers.ModelSerializer):
         fields = ['id', 'url']
 
     def get_url(self, obj):
+        """
+        Returns the string for the url field.
+        """
         return f"/offerdetails/{obj.id}/"
 
 
@@ -37,6 +43,9 @@ class OfferGetAdditionalFieldsSerializer(serializers.ModelSerializer):
         fields = ['min_price', 'min_delivery_time', 'user_details']
 
     def get_user_details(self, obj):
+        """
+        Returns the object for the user_details field.
+        """
         if obj.user:
             return {
                 'first_name': obj.user.first_name,
@@ -61,6 +70,9 @@ class OfferCreateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'description', 'created_at', 'updated_at', 'details']
     
     def validate_details(self, data):
+        """
+        Checks whether the details list field has exactly 3 elements and the offer types (basic, standard and premium) are present.
+        """
         if len(data) != 3:
             raise serializers.ValidationError('Need 3 details!')
         
@@ -74,7 +86,9 @@ class OfferCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        print('validated_data:', validated_data)
+        """
+        Creates a new Offer object with 3 new OfferDetail objects.
+        """
         offer_details_list = validated_data.pop('details')
         offer_details = [OfferDetail(**item) for item in offer_details_list]
         offer = Offer.objects.create(**validated_data)
@@ -91,7 +105,9 @@ class OfferDetailSerializer(OfferGetAdditionalFieldsSerializer, serializers.Mode
         read_only_fields = ['user', 'created_at', 'updated_at']
 
     def update(self, instance, validated_data):
-        print('validated_data:', validated_data)
+        """
+        Updates the current Offer object incl. their OfferDetails objects.
+        """
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.image = validated_data.get('image', instance.image)
@@ -127,6 +143,9 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ['customer_user', 'business_user', 'status' 'created_at', 'updated_at']
 
     def update(self, instance, validated_data):
+        """
+        Updates only the status field of the current Order object.
+        """
         if len(validated_data) > 1 or 'status' not in validated_data:
             raise serializers.ValidationError("Only the 'status' field can be updated.")
         instance.status = validated_data.get('status', instance.status)
@@ -141,20 +160,30 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ['reviewer', 'created_at', 'updated_at']
 
     def validate(self, data):
+        """
+        Checks whether a Review object with the current customer user and business user already exists.
+        A customer user can only review a business user once.
+        """
         user = self.context['request'].user
         business_user = data.get('business_user')
         
         if business_user and Review.objects.filter(reviewer=user, business_user=business_user).exists():
-            raise serializers.ValidationError("You have already reviewed this business user.")
+            raise serializers.ValidationError('You have already reviewed this business user.')
         return data
 
     def validate_business_user(self, data):
+        """
+        Checks whether the UserProfile is a business user profile.
+        """
         if UserProfile.objects.get(user=data).type != 'business':
-            raise serializers.ValidationError("User is not a business user.")
+            raise serializers.ValidationError('User is not a business user.')
         else:
             return data
 
     def update(self, instance, validated_data):
+        """
+        Updates only the rating and description field of the current Review object.
+        """
         if len(validated_data) > 2:
             raise serializers.ValidationError("Only the 'rating' and 'description' field can be updated.")
         elif ('rating' not in validated_data) and ('description' not in validated_data):

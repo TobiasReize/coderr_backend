@@ -17,7 +17,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
     
     def save(self):
-        print('self.validated_data:', self.validated_data)
+        """
+        Checks whether the passwords match and whether the email address already exists.
+        If it's valid a new User object and UserProfile object will be created.
+        Return value is the User object.
+        """
         username = self.validated_data['username']
         email = self.validated_data['email']
         pw = self.validated_data['password']
@@ -49,7 +53,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type', 'email', 'created_at']
 
     def update(self, instance, validated_data):
-        print('validated_data:', validated_data)
+        """
+        Function for updating specific fields for the UserProfile object and User object.
+        """
         for field in self.Meta.fields:
             if field in validated_data:
                 setattr(instance, field, validated_data[field])
@@ -63,6 +69,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance
     
     def to_representation(self, instance):
+        """
+        Function for the representation for the current instance.
+        """
         representation = super().to_representation(instance)
         if instance.file:
             representation['file'] = instance.file.url
@@ -76,6 +85,9 @@ class BusinessUserSerializer(serializers.ModelSerializer):
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location', 'tel', 'description', 'working_hours', 'type']
 
     def to_representation(self, instance):
+        """
+        Function for the representation for the current instance.
+        """
         representation = super().to_representation(instance)
         response_data = {}
 
@@ -101,6 +113,9 @@ class CustomerUserSerializer(serializers.ModelSerializer):
         fields = ['user', 'username', 'first_name', 'last_name', 'file', 'type', 'created_at']
 
     def to_representation(self, instance):
+        """
+        Function for the representation for the current instance.
+        """
         representation = super().to_representation(instance)
         response_data = {}
 
