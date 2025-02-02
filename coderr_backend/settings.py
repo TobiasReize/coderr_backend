@@ -35,9 +35,17 @@ def check_secret_key():
 SECRET_KEY = check_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'tobias-reize.developerakademie.org']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'tobias-reize.developerakademie.org',
+    'coderr.tobias-reize.de'
+]
+
+SESSION_COOKIE_SECURE =True 
+CSRF_COOKIE_SECURE =True  
+SECURE_SSL_REDIRECT=True
 
 
 # Application definition
@@ -57,7 +65,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,15 +75,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-  'http://127.0.0.1:5500',
-  'http://localhost:5500',
-]
+# CSRF_TRUSTED_ORIGINS = [
+#   'http://127.0.0.1:5500',
+#   'http://localhost:5500',
+# ]
 
-CORS_ALLOWED_ORIGINS = [
-  'http://127.0.0.1:5500',
-  'http://localhost:5500',
-]
+# CORS_ALLOWED_ORIGINS = [
+#   'http://127.0.0.1:5500',
+#   'http://localhost:5500',
+# ]
 
 ROOT_URLCONF = 'coderr_backend.urls'
 
