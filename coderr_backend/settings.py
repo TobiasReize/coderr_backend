@@ -41,7 +41,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '34.91.116.137',
     'tobias-reize.developerakademie.org',
-    'coderr.tobias-reize.de'
+    'coderr.tobias-reize.de',
+    'coderr-backend.tobias-reize.de'
 ]
 
 SESSION_COOKIE_SECURE =True 
@@ -50,7 +51,6 @@ SECURE_SSL_REDIRECT=True
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -66,7 +66,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,15 +76,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CSRF_TRUSTED_ORIGINS = [
-#   'http://127.0.0.1:5500',
-#   'http://localhost:5500',
-# ]
+CSRF_TRUSTED_ORIGINS = [
+  'http://127.0.0.1:5500',
+  'http://localhost:5500',
+  'https://www.coderr.tobias-reize.de',
+]
 
-# CORS_ALLOWED_ORIGINS = [
-#   'http://127.0.0.1:5500',
-#   'http://localhost:5500',
-# ]
+CORS_ALLOWED_ORIGINS = [
+  'http://127.0.0.1:5500',
+  'http://localhost:5500',
+  'https://www.coderr.tobias-reize.de',
+]
 
 ROOT_URLCONF = 'coderr_backend.urls'
 
