@@ -77,15 +77,17 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-  'http://127.0.0.1:5500',
-  'http://localhost:5500',
-  'https://www.coderr.tobias-reize.de',
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'https://coderr.tobias-reize.de',
+    'https://coderr-backend.tobias-reize.de',
 ]
 
 CORS_ALLOWED_ORIGINS = [
-  'http://127.0.0.1:5500',
-  'http://localhost:5500',
-  'https://www.coderr.tobias-reize.de',
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'https://coderr.tobias-reize.de',
+    'https://coderr-backend.tobias-reize.de',
 ]
 
 ROOT_URLCONF = 'coderr_backend.urls'
