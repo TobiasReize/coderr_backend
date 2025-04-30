@@ -26,32 +26,28 @@ MEDIA_URL = '/media/'
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-def check_secret_key():
-    if (os.environ.get('SECRET_KEY')):
-        return os.environ.get('SECRET_KEY')
-    else:
-        return 'test_key_for_development'
-
-SECRET_KEY = check_secret_key()
+SECRET_KEY = os.getenv('SECRET_KEY', 'test_key_for_development-1A-2b_3C')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    '34.91.116.137',
-    'tobias-reize.developerakademie.org',
-    'coderr.tobias-reize.de',
-    'coderr-backend.tobias-reize.de'
-]
+if DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:4200', 'http://localhost:4200']
+    CORS_ALLOWED_ORIGINS = ['http://127.0.0.1:4200', 'http://localhost:4200']
+else:
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
+    SESSION_COOKIE_SECURE = True 
+    CSRF_COOKIE_SECURE = True
 
-SESSION_COOKIE_SECURE =True 
-CSRF_COOKIE_SECURE =True  
+    # HSTS settings
+    SECURE_HSTS_SECONDS = 1209600 # 2 weeks 
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    
+    CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(',')
+    CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(',')
 
-# HSTS settings  
-SECURE_HSTS_SECONDS= 1209600 # 2 weeks 
-SECURE_HSTS_PRELOAD =True 
-SECURE_HSTS_INCLUDE_SUBDOMAINS=True
 
 # Application definition
 INSTALLED_APPS = [
@@ -78,20 +74,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:5500',
-    'http://localhost:5500',
-    'https://coderr.tobias-reize.de',
-    'https://coderr-backend.tobias-reize.de',
-]
-
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:5500',
-    'http://localhost:5500',
-    'https://coderr.tobias-reize.de',
-    'https://coderr-backend.tobias-reize.de',
 ]
 
 ROOT_URLCONF = 'coderr_backend.urls'
@@ -181,10 +163,10 @@ REST_FRAMEWORK = {
 # Static file serving.
 # https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
 STORAGES = {
-     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
