@@ -6,7 +6,7 @@ Coderr uses the Django and Django Restframework (DRF) to provide individual endp
 This project is part of the coderr_frontend_v1.1.0<br/>
 Changes in the config.js: customer guest username: "customer_gest" and business guest username: "business_guest"
 
-## How to install this repository (Backend):
+## How to install this repository:
 
 1. Clone this repository:
 ```
@@ -24,16 +24,21 @@ Changes in the config.js: customer guest username: "customer_gest" and business 
     pip install -r requirements.txt
 ```
 
-4. Start the local development server (on path: 127.0.0.1:8000):
+4. Set the environment variables:
+```
+    rename the .env-template file to .env and fill out the environment variables
+```
+
+5. Start the local development server (on path: 127.0.0.1:8000):
 ```
     python manage.py runserver
 ```
 
-5. Apply migrations:
+6. Apply migrations:
 ```
     python manage.py makemigrations
     python manage.py migrate
 ```
 
-6. Start coderr_frontend:<br/>
-clone the repository and run the liveserver on path 127.0.0.1:5500
+7. Start coderr_frontend:<br/>
+clone the repository and run the liveserver on path 127.0.0.1:4200
