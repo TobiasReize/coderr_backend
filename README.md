@@ -29,16 +29,21 @@ Changes in the config.js: customer guest username: "customer_gest" and business 
     rename the .env-template file to .env and fill out the environment variables
 ```
 
-5. Start the local development server (on path: 127.0.0.1:8000):
-```
-    python manage.py runserver
-```
-
-6. Apply migrations:
+5. Apply migrations:
 ```
     python manage.py makemigrations
     python manage.py migrate
 ```
 
-7. Start coderr_frontend:<br/>
+6. Create static files:
+```
+    python manage.py collectstatic
+```
+
+7. Start the local development server (on path: 127.0.0.1:8000):
+```
+    python manage.py runserver
+```
+
+8. Start coderr_frontend:<br/>
 clone the repository and run the liveserver on path 127.0.0.1:4200
